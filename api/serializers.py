@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
+from rest_framework.reverse import reverse
 from rest_framework.serializers import ValidationError
 
 from api.models import Collection, Course, Schedule, Session
@@ -25,10 +26,10 @@ class UserSerializer(serializers.ModelSerializer):
         return User.objects.create_user(**validated_data)
 
 
-class SessionSerializer(serializers.ModelSerializer):
+class SessionSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Session
-        fields = ["date", "status"]
+        fields = ["url", "date", "status"]
 
 
 class ScheduleSerializer(serializers.ModelSerializer):
@@ -83,3 +84,19 @@ class CollectionSerializer(serializers.ModelSerializer):
                 course.schedules.create(**schedule_data)
 
         return instance
+
+
+class DateQuerySerializer(serializers.ModelSerializer):
+    class SessionHyperlink(serializers.HyperlinkedIdentityField):
+        def get_url(self, obj, view_name, request, format):
+            url_kwargs = {
+                "pk": obj.s_id,
+            }
+            return reverse(view_name, kwargs=url_kwargs, request=request, format=format)
+
+    status = serializers.CharField()
+    session_url = SessionHyperlink(read_only=True, view_name="session-detail")
+
+    class Meta:
+        model = Course
+        fields = ["name", "status", "session_url"]

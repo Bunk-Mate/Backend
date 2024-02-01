@@ -1,14 +1,19 @@
+import datetime
+
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from django.db import IntegrityError
+from django.db.models import Count, F
 from rest_framework import generics, permissions, status
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from api.models import Course, Session
 from api.serializers import (
     CollectionSerializer,
     CourseSerializer,
+    DateQuerySerializer,
     ScheduleSerializer,
     SessionSerializer,
     UserSerializer,
@@ -64,7 +69,7 @@ class UserLogout(APIView):
         return Response({"Successfully logged out"}, status=status.HTTP_200_OK)
 
 
-class CollectionView(generics.ListCreateAPIView):
+class CollectionListView(generics.ListCreateAPIView):
     permissions = [permissions.IsAuthenticated]
     serializer_class = CollectionSerializer
 
@@ -88,3 +93,29 @@ class CollectionDetailView(generics.RetrieveUpdateDestroyAPIView):
             {"detail": 'Method "PATCH" not allowed'},
             status=status.HTTP_405_METHOD_NOT_ALLOWED,
         )
+
+
+class SessionDetailView(generics.RetrieveUpdateAPIView):
+    permissions = [permissions.IsAuthenticated]
+    serializer_class = SessionSerializer
+
+    def get_queryset(self):
+        return Session.objects.filter(course__collection__user=self.request.user)
+
+
+class DateQuery(APIView):
+    permissions = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        date_str = request.GET.get("date")
+        date = datetime.date.fromisoformat(date_str)
+        courses = Course.objects.filter(sessions__date=date)
+        # Add session status to each course
+        courses = courses.annotate(status=F("sessions__status"))
+        # Add session id to each course, used for building url
+        courses = courses.annotate(s_id=F("sessions__id"))
+
+        serializer = DateQuerySerializer(
+            courses, many=True, context={"request": request}
+        )
+        return Response(serializer.data, status=status.HTTP_200_OK)
