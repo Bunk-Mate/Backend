@@ -3,7 +3,7 @@ import datetime
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from django.db import IntegrityError
-from django.db.models import Count, F
+from django.db.models import F
 from rest_framework import generics, permissions, status
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
@@ -12,9 +12,7 @@ from rest_framework.views import APIView
 from api.models import Course, Session
 from api.serializers import (
     CollectionSerializer,
-    CourseSerializer,
     DateQuerySerializer,
-    ScheduleSerializer,
     SessionSerializer,
     UserSerializer,
 )
