@@ -7,7 +7,7 @@ class Marketplace(models.Model):
 
 
 class Collection(models.Model):
-    user = models.ForeignKey(User, related_name="timetables", on_delete=models.CASCADE)
+    user = models.ForeignKey(User, related_name="collections", on_delete=models.CASCADE)
     name = models.CharField(max_length=120)
     shared = models.BooleanField(default=False)
 
