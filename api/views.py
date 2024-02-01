@@ -82,12 +82,9 @@ class CollectionDetailView(generics.RetrieveUpdateDestroyAPIView):
     def get_queryset(self):
         return self.request.user.collections.all()
 
-    def perform_update(self, serializer):
-        serializer.save(user=self.request.user)
-
     # Disallow partial updates, see comment in serializers@77
     def patch(self, request, *args, **kwargs):
         return Response(
-            {"detail": "Patch method is not allowed"},
+            {"detail": 'Method "PATCH" not allowed'},
             status=status.HTTP_405_METHOD_NOT_ALLOWED,
         )

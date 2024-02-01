@@ -68,7 +68,6 @@ class CollectionSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         courses_data = validated_data.pop("courses")
-        user = validated_data.pop("user")
 
         instance.name = validated_data.get("name", instance.name)
         instance.shared = validated_data.get("shared", instance.shared)
