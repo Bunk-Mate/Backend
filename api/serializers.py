@@ -5,9 +5,6 @@ from rest_framework.serializers import ValidationError
 
 
 class UserSerializer(serializers.ModelSerializer):
-    # books = serializers.PrimaryKeyRelatedField(
-    #     required=False, many=True, queryset=Book.objects.all()
-    # )
     password = serializers.CharField(write_only=True)
 
     class Meta:

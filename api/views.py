@@ -56,18 +56,3 @@ class UserLogout(APIView):
                 {"Token does not exist"}, status=status.HTTP_400_BAD_REQUEST
             )
         return Response({"Successfully logged out"}, status=status.HTTP_200_OK)
-
-
-# class BookAdd(generics.CreateAPIView):
-#     queryset = Book.objects.all()
-#     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-#     serializer_class = BookSerializer
-#
-#     def perform_create(self, serializer):
-#         serializer.save(owner=self.request.user)
-
-
-class TestFunc(APIView):
-    def get(self, request, format=None):
-        print(request.user.id)
-        return Response(status=status.HTTP_200_OK)
