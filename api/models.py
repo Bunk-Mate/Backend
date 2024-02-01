@@ -25,13 +25,20 @@ class Course(models.Model):
         return round(self.attended / (self.attended + self.missed), 2)
 
 
-class Attendance(models.Model):
+class Session(models.Model):
     status_choices = models.TextChoices("StatusChoices", "present bunked cancelled")
     course = models.ForeignKey(
-        Course, related_name="attendances", on_delete=models.CASCADE
+        Course, related_name="sessions", on_delete=models.CASCADE
     )
     date = models.DateField()
     status = models.TextField(choices=status_choices)
+
+    # Choice fields are validated through model validation but django
+    # doesnt enforce model validation on creation of new objects,
+    # so we overwrite save to add validation functionality
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
 
 
 class Schedule(models.Model):

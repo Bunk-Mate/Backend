@@ -3,7 +3,7 @@ from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
 from rest_framework.serializers import ValidationError
 
-from api.models import Attendance, Collection, Course, Schedule
+from api.models import Collection, Course, Schedule, Session
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -25,9 +25,9 @@ class UserSerializer(serializers.ModelSerializer):
         return User.objects.create_user(**validated_data)
 
 
-class AttendanceSerializer(serializers.ModelSerializer):
+class SessionSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Attendance
+        model = Session
         fields = ["date", "status"]
 
 
