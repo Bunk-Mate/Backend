@@ -11,9 +11,8 @@ userpatterns = [
 ]
 
 modelpatterns = [
-    path("collection", views.CollectionListView.as_view()),
-    path("collection/<int:pk>", views.CollectionDetailView.as_view()),
-    path("session/<int:pk>", views.SessionDetailView.as_view(), name="session-detail"),
+    path("collection", views.CollectionView.as_view()),
+    path("session/<int:pk>", views.SessionView.as_view(), name="session-detail"),
 ]
 
 querypatterns = [path("datequery", views.DateQuery.as_view())]
