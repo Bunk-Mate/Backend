@@ -2,14 +2,16 @@ import datetime
 
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
+from django.core.management import call_command
 from django.db import IntegrityError
 from django.db.models import F
+from django.shortcuts import get_object_or_404
 from rest_framework import generics, permissions, status
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from api.models import Course, Session
+from api.models import Collection, Course, Session
 from api.serializers import (
     CollectionSerializer,
     DateQuerySerializer,
@@ -67,25 +69,24 @@ class UserLogout(APIView):
         return Response({"Successfully logged out"}, status=status.HTTP_200_OK)
 
 
-class CollectionListView(generics.ListCreateAPIView):
+class CollectionView(generics.RetrieveUpdateDestroyAPIView, generics.CreateAPIView):
     permissions = [permissions.IsAuthenticated]
     serializer_class = CollectionSerializer
+    queryset = Collection.objects.all()
 
-    def get_queryset(self):
-        return self.request.user.collections.all()
+    def get_object(self):
+        obj = get_object_or_404(Collection, user=self.request.user)
+        return obj
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+        call_command("create_session")
 
+    def perform_update(self, serializer):
+        serializer.save()
+        call_command("create_session")
 
-class CollectionDetailView(generics.RetrieveUpdateDestroyAPIView):
-    permissions = [permissions.IsAuthenticated]
-    serializer_class = CollectionSerializer
-
-    def get_queryset(self):
-        return self.request.user.collections.all()
-
-    # Disallow partial updates, see comment in serializers@77
+    # Disallow partial updates, see comment in serializers@76
     def patch(self, request, *args, **kwargs):
         return Response(
             {"detail": 'Method "PATCH" not allowed'},
@@ -93,7 +94,7 @@ class CollectionDetailView(generics.RetrieveUpdateDestroyAPIView):
         )
 
 
-class SessionDetailView(generics.RetrieveUpdateAPIView):
+class SessionView(generics.RetrieveUpdateAPIView):
     permissions = [permissions.IsAuthenticated]
     serializer_class = SessionSerializer
 
@@ -107,7 +108,10 @@ class DateQuery(APIView):
     def get(self, request):
         date_str = request.GET.get("date")
         date = datetime.date.fromisoformat(date_str)
-        courses = Course.objects.filter(sessions__date=date)
+
+        courses = Course.objects.filter(
+            sessions__date=date, collection__user=self.request.user
+        )
         # Add session status to each course
         courses = courses.annotate(status=F("sessions__status"))
         # Add session id to each course, used for building url

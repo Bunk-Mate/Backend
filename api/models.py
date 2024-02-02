@@ -7,7 +7,9 @@ class Marketplace(models.Model):
 
 
 class Collection(models.Model):
-    user = models.ForeignKey(User, related_name="collections", on_delete=models.CASCADE)
+    user = models.OneToOneField(
+        User, related_name="collection", on_delete=models.CASCADE
+    )
     name = models.CharField(max_length=120)
     shared = models.BooleanField(default=False)
 

@@ -56,8 +56,7 @@ class CollectionSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         courses_data = validated_data.pop("courses")
-        user = validated_data.pop("user")
-        collection = user.collections.create(**validated_data)
+        collection = Collection.objects.create(**validated_data)
 
         for course_data in courses_data:
             schedules_data = course_data.pop("schedules")
