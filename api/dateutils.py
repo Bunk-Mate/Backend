@@ -63,7 +63,7 @@ def is_holiday(date: datetime.date):
         return False
 
 
-def working_date_range(start_date, end_date):
+def working_days(start_date, end_date):
     current_date = start_date
     while current_date <= end_date:
         if current_date.weekday() not in [SA, SU] and not is_holiday(current_date):
