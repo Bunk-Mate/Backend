@@ -5,6 +5,7 @@ from rest_framework.reverse import reverse
 from rest_framework.serializers import ValidationError
 
 from api.models import Collection, Course, Schedule, Session
+from attendence_tracker.celery import create_sessions
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -52,7 +53,7 @@ class CollectionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Collection
-        fields = ["name", "shared", "courses"]
+        fields = ["name", "shared", "courses", "start_date", "end_date", "threshold"]
 
     def create(self, validated_data):
         courses_data = validated_data.pop("courses")
@@ -64,6 +65,7 @@ class CollectionSerializer(serializers.ModelSerializer):
             for schedule_data in schedules_data:
                 course.schedules.create(**schedule_data)
 
+        create_sessions.delay(collection.start_date, collection.end_date)
         return collection
 
     def update(self, instance, validated_data):
@@ -71,6 +73,9 @@ class CollectionSerializer(serializers.ModelSerializer):
 
         instance.name = validated_data.get("name", instance.name)
         instance.shared = validated_data.get("shared", instance.shared)
+        instance.threshold = validated_data.get("threshold", instance.threshold)
+        instance.start_date = validated_data.get("start_date", instance.start_date)
+        instance.end_date = validated_data.get("end_date", instance.end_date)
         instance.save()
 
         # Since this is a collection level update, passing ID's would be a hassle
@@ -82,6 +87,7 @@ class CollectionSerializer(serializers.ModelSerializer):
             for schedule_data in schedules_data:
                 course.schedules.create(**schedule_data)
 
+        create_sessions.delay(instance.start_date, instance.end_date)
         return instance
 
 
@@ -99,3 +105,9 @@ class DateQuerySerializer(serializers.ModelSerializer):
     class Meta:
         model = Course
         fields = ["name", "status", "session_url"]
+
+
+class StatQuerySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Course
+        fields = ["name", "percentage", "bunks_available"]

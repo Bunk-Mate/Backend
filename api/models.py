@@ -1,3 +1,6 @@
+import datetime
+import math
+
 from django.contrib.auth.models import User
 from django.db import models
 
@@ -12,6 +15,9 @@ class Collection(models.Model):
     )
     name = models.CharField(max_length=120)
     shared = models.BooleanField(default=False)
+    threshold = models.IntegerField(default=75)
+    start_date = models.DateField()
+    end_date = models.DateField()
 
 
 class Course(models.Model):
@@ -20,11 +26,23 @@ class Course(models.Model):
         Collection, related_name="courses", on_delete=models.CASCADE
     )
 
-    @property
     def percentage(self):
-        if self.attended == 0:
+        present_count = self.sessions.filter(
+            status="present", date__lte=datetime.date.today()
+        ).count()
+        bunked_count = self.sessions.filter(status="bunked").count()
+        if present_count == 0:
             return 0
-        return round(self.attended / (self.attended + self.missed), 2)
+        else:
+            return round(present_count / (present_count + bunked_count) * 100)
+
+    def bunks_available(self):
+        total_sessions = self.sessions.count()
+        must_attend = math.ceil((total_sessions * self.collection.threshold) / 100)
+        total_bunks_available = total_sessions - must_attend
+        bunked_sessions = self.sessions.filter(status="bunked").count()
+
+        return total_bunks_available - bunked_sessions
 
 
 class Session(models.Model):

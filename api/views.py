@@ -2,7 +2,6 @@ import datetime
 
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
-from django.core.management import call_command
 from django.db import IntegrityError
 from django.db.models import F
 from django.shortcuts import get_object_or_404
@@ -16,6 +15,7 @@ from api.serializers import (
     CollectionSerializer,
     DateQuerySerializer,
     SessionSerializer,
+    StatQuerySerializer,
     UserSerializer,
 )
 
@@ -80,11 +80,9 @@ class CollectionView(generics.RetrieveUpdateDestroyAPIView, generics.CreateAPIVi
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
-        call_command("create_session")
 
     def perform_update(self, serializer):
         serializer.save()
-        call_command("create_session")
 
     # Disallow partial updates, see comment in serializers@76
     def patch(self, request, *args, **kwargs):
@@ -121,3 +119,11 @@ class DateQuery(APIView):
             courses, many=True, context={"request": request}
         )
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class StatQuery(generics.ListAPIView):
+    permissions = [permissions.IsAuthenticated]
+    serializer_class = StatQuerySerializer
+
+    def get_queryset(self):
+        return Course.objects.filter(collection__user=self.request.user)

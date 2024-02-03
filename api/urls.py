@@ -15,6 +15,12 @@ modelpatterns = [
     path("session/<int:pk>", views.SessionView.as_view(), name="session-detail"),
 ]
 
-querypatterns = [path("datequery", views.DateQuery.as_view())]
+querypatterns = [
+    path(
+        "datequery",
+        views.DateQuery.as_view(),
+    ),
+    path("statquery", views.StatQuery.as_view()),
+]
 
 urlpatterns = list(userpatterns + modelpatterns + querypatterns)
