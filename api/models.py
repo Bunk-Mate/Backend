@@ -69,3 +69,4 @@ class Schedule(models.Model):
         Course, related_name="schedules", on_delete=models.CASCADE
     )
     day_of_week = models.TextField(choices=day_of_week_choices)
+    order = models.IntegerField(default=1)

@@ -36,7 +36,7 @@ class SessionSerializer(serializers.HyperlinkedModelSerializer):
 class ScheduleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Schedule
-        fields = ["day_of_week"]
+        fields = ["day_of_week", "order"]
 
 
 class CourseSerializer(serializers.ModelSerializer):

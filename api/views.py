@@ -1,4 +1,5 @@
 import datetime
+from collections import defaultdict
 
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
@@ -8,12 +9,14 @@ from django.shortcuts import get_object_or_404
 from rest_framework import generics, permissions, status
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
+from rest_framework.reverse import reverse
 from rest_framework.views import APIView
 
-from api.models import Collection, Course, Session
+from api.models import Collection, Course, Schedule, Session
 from api.serializers import (
     CollectionSerializer,
     DateQuerySerializer,
+    ScheduleSerializer,
     SessionSerializer,
     StatQuerySerializer,
     UserSerializer,
@@ -98,6 +101,34 @@ class SessionView(generics.RetrieveUpdateAPIView):
 
     def get_queryset(self):
         return Session.objects.filter(course__collection__user=self.request.user)
+
+
+class ScheduleView(generics.RetrieveDestroyAPIView):
+    permissions = [permissions.IsAuthenticated]
+    serializer_class = ScheduleSerializer
+
+    def get_queryset(self):
+        return Schedule.objects.filter(course__collection__user=self.request.user.id)
+
+
+class ScheduleListView(generics.ListCreateAPIView):
+    permissions = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        schedules = Schedule.objects.all().order_by(F("day_of_week"))
+        result = defaultdict(list)
+        for schedule in schedules:
+            result[schedule.day_of_week].append(
+                {
+                    "url": reverse(
+                        "schedule-detail",
+                        kwargs={"pk": schedule.id},
+                        request=request,
+                    ),
+                    "name": schedule.course.name,
+                }
+            )
+        return Response(result, status=status.HTTP_200_OK)
 
 
 class DateQuery(APIView):

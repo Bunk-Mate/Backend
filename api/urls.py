@@ -12,6 +12,8 @@ userpatterns = [
 
 modelpatterns = [
     path("collection", views.CollectionView.as_view()),
+    path("schedules", views.ScheduleListView.as_view(), name="schedule-list"),
+    path("schedule/<int:pk>", views.ScheduleView.as_view(), name="schedule-detail"),
     path("session/<int:pk>", views.SessionView.as_view(), name="session-detail"),
 ]
 
