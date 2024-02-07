@@ -62,11 +62,18 @@ class Session(models.Model):
 
 
 class Schedule(models.Model):
-    day_of_week_choices = models.TextChoices(
-        "DayOfWeekChoices", "monday tuesday wednesday thursday friday"
-    )
+    class day_of_week_choices(models.IntegerChoices):
+        MONDAY = 1, "monday"
+        TUESDAY = 2, "tuesday"
+        WEDNESDAY = 3, "wednesday"
+        THURSDAY = 4, "thursday"
+        FRIDAY = 5, "friday"
+
+    # day_of_week_choices = models.IntegerChoices(
+    #     "DayOfWeekChoices", "monday tuesday wednesday thursday friday"
+    # )
     course = models.ForeignKey(
         Course, related_name="schedules", on_delete=models.CASCADE
     )
-    day_of_week = models.TextField(choices=day_of_week_choices)
+    day_of_week = models.IntegerField(choices=day_of_week_choices)
     order = models.IntegerField(default=1)

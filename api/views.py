@@ -116,10 +116,12 @@ class ScheduleListView(APIView):
     permissions = [permissions.IsAuthenticated]
 
     def get(self, request):
-        schedules = Schedule.objects.all().order_by(F("day_of_week"))
+        schedules = Schedule.objects.filter(
+            course__collection__user=request.user
+        ).order_by(F("day_of_week"))
         result = defaultdict(list)
         for schedule in schedules:
-            result[schedule.day_of_week].append(
+            result[schedule.get_day_of_week_display()].append(
                 {
                     "url": reverse(
                         "schedule-detail",

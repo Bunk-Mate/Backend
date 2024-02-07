@@ -86,7 +86,7 @@ WSGI_APPLICATION = "attendence_tracker.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "testing2",
+        "NAME": "testing",
         "USER": "hridesh",
         "PASSWORD": "system",
         "HOST": "localhost",

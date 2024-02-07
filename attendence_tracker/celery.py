@@ -21,7 +21,9 @@ def create_sessions(start_date, end_date):
     session_objs = []
     for day in working_days(start_date, end_date):
         for schedule in schedules:
-            if schedule.day_of_week == day.strftime("%A").lower():
+            if (
+                schedule.day_of_week - 1
+            ) == day.weekday():  # python weekday starts at 0
                 session_objs.append(
                     Session(date=day, course=schedule.course, status="present")
                 )

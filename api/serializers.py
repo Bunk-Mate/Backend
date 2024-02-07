@@ -34,9 +34,14 @@ class SessionSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class ScheduleSerializer(serializers.ModelSerializer):
+    day_of_week = serializers.IntegerField(write_only=True)
+    day_of_week_str = serializers.CharField(
+        source="get_day_of_week_display", read_only=True
+    )
+
     class Meta:
         model = Schedule
-        fields = ["day_of_week", "order"]
+        fields = ["day_of_week", "order", "day_of_week_str"]
 
 
 class ScheduleCreateSerializer(serializers.ModelSerializer):
@@ -61,7 +66,7 @@ class CollectionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Collection
-        fields = ["name", "shared", "courses", "start_date", "end_date", "threshold"]
+        fields = ["name", "shared", "start_date", "end_date", "threshold", "courses"]
 
     def create(self, validated_data):
         courses_data = validated_data.pop("courses")
