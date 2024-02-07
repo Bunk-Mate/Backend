@@ -14,6 +14,7 @@ app.conf.result_backend = "django-db"
 
 @app.task
 def create_sessions(start_date, end_date):
+    """Create sessions for all schedules"""
     from api.dateutils import working_days
     from api.models import Schedule, Session
 
@@ -30,6 +31,28 @@ def create_sessions(start_date, end_date):
                 logging.info(
                     f"added session for {schedule.course.name} on date {day.strftime('%Y-%m-%d')}"
                 )
+
+    Session.objects.bulk_create(session_objs)
+    return f"Inserted {len(session_objs)} sessions into the database"
+
+
+@app.task
+def create_sessions_schedule(schedule_id, start_date, end_date):
+    """Create sessions for one schedule"""
+    from api.dateutils import working_days
+    from api.models import Schedule, Session
+
+    schedule = Schedule.objects.get(id=schedule_id)
+
+    session_objs = []
+    for day in working_days(start_date, end_date):
+        if (schedule.day_of_week - 1) == day.weekday():
+            session_objs.append(
+                Session(date=day, course=schedule.course, status="present")
+            )
+            logging.info(
+                f"added session for {schedule.course.name} on date {day.strftime('%Y-%m-%d')}"
+            )
 
     Session.objects.bulk_create(session_objs)
     return f"Inserted {len(session_objs)} sessions into the database"
