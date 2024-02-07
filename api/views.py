@@ -90,13 +90,6 @@ class CollectionView(generics.RetrieveUpdateDestroyAPIView, generics.CreateAPIVi
     def perform_update(self, serializer):
         serializer.save()
 
-    # Disallow partial updates, see comment in serializers@76
-    def patch(self, request, *args, **kwargs):
-        return Response(
-            {"detail": 'Method "PATCH" not allowed'},
-            status=status.HTTP_405_METHOD_NOT_ALLOWED,
-        )
-
 
 class CourseListView(generics.CreateAPIView):
     permissions = [permissions.IsAuthenticated]

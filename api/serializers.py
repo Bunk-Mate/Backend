@@ -1,3 +1,5 @@
+from collections import defaultdict
+
 from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
@@ -60,27 +62,41 @@ class CourseSerializer(serializers.ModelSerializer):
 
 class CollectionSerializer(serializers.ModelSerializer):
     shared = serializers.BooleanField(required=False)
-    courses = CourseSerializer(many=True)
+    courses = CourseSerializer(many=True, read_only=True)
+    courses_data = serializers.ListField(write_only=True)
 
     class Meta:
         model = Collection
-        fields = ["name", "shared", "start_date", "end_date", "threshold", "courses"]
+        fields = [
+            "name",
+            "shared",
+            "start_date",
+            "end_date",
+            "threshold",
+            "courses",
+            "courses_data",
+        ]
 
     def create(self, validated_data):
-        courses_data = validated_data.pop("courses")
+        table_data = validated_data.pop("courses_data")
         collection = Collection.objects.create(**validated_data)
 
-        for course_data in courses_data:
-            schedules_data = course_data.pop("schedules")
-            course = collection.courses.create(**course_data)
-            for schedule_data in schedules_data:
-                course.schedules.create(**schedule_data)
+        course_list = defaultdict(list)
+        for periods in table_data:
+            for day, period in enumerate(periods, 1):
+                if period != "":
+                    course_list[period].append(day)
+
+        for course in course_list:
+            created_course = collection.courses.create(name=course)
+            for day in course_list[course]:
+                created_course.schedules.create(day_of_week=day)
 
         create_sessions.delay(collection.start_date, collection.end_date)
         return collection
 
     def update(self, instance, validated_data):
-        courses_data = validated_data.pop("courses")
+        table_data = validated_data.pop("courses_data")
 
         instance.name = validated_data.get("name", instance.name)
         instance.shared = validated_data.get("shared", instance.shared)
@@ -92,11 +108,15 @@ class CollectionSerializer(serializers.ModelSerializer):
         # Since this is a collection level update, passing ID's would be a hassle
         # Hence we delete all existing courses and rebuild them
         instance.courses.all().delete()
-        for course_data in courses_data:
-            schedules_data = course_data.pop("schedules")
-            course = instance.courses.create(**course_data)
-            for schedule_data in schedules_data:
-                course.schedules.create(**schedule_data)
+        course_list = defaultdict(list)
+        for periods in table_data:
+            for day, period in enumerate(periods, 1):
+                course_list[period].append(day)
+
+        for course in course_list:
+            created_course = instance.courses.create(name=course)
+            for day in course_list[course]:
+                created_course.schedules.create(day_of_week=day)
 
         create_sessions.delay(instance.start_date, instance.end_date)
         return instance
