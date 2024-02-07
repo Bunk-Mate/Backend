@@ -27,6 +27,12 @@ class UserSerializer(serializers.ModelSerializer):
         return User.objects.create_user(**validated_data)
 
 
+class CourseListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Course
+        fields = ["name"]
+
+
 class SessionSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Session
@@ -44,14 +50,6 @@ class ScheduleSerializer(serializers.ModelSerializer):
         fields = ["day_of_week", "order", "day_of_week_str"]
 
 
-class ScheduleCreateSerializer(serializers.ModelSerializer):
-    course_name = serializers.CharField()
-
-    class Meta:
-        model = Schedule
-        fields = ["day_of_week", "course_name"]
-
-
 class CourseSerializer(serializers.ModelSerializer):
     schedules = ScheduleSerializer(many=True)
 
@@ -62,7 +60,7 @@ class CourseSerializer(serializers.ModelSerializer):
 
 class CollectionSerializer(serializers.ModelSerializer):
     shared = serializers.BooleanField(required=False)
-    courses = CourseSerializer(many=True)
+    courses = CourseSerializer(many=True, default=[])
 
     class Meta:
         model = Collection
