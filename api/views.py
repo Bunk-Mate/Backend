@@ -16,6 +16,7 @@ from api.models import Collection, Course, Schedule, Session
 from api.serializers import (
     CollectionSerializer,
     DateQuerySerializer,
+    ScheduleCreateSerializer,
     ScheduleSerializer,
     SessionSerializer,
     StatQuerySerializer,
@@ -95,7 +96,7 @@ class CollectionView(generics.RetrieveUpdateDestroyAPIView, generics.CreateAPIVi
         )
 
 
-class SessionView(generics.RetrieveUpdateAPIView):
+class SessionView(generics.RetrieveDestroyAPIView):
     permissions = [permissions.IsAuthenticated]
     serializer_class = SessionSerializer
 
@@ -111,7 +112,7 @@ class ScheduleView(generics.RetrieveDestroyAPIView):
         return Schedule.objects.filter(course__collection__user=self.request.user.id)
 
 
-class ScheduleListView(generics.ListCreateAPIView):
+class ScheduleListView(APIView):
     permissions = [permissions.IsAuthenticated]
 
     def get(self, request):
@@ -129,6 +130,32 @@ class ScheduleListView(generics.ListCreateAPIView):
                 }
             )
         return Response(result, status=status.HTTP_200_OK)
+
+    def post(self, request):
+        serializer = ScheduleCreateSerializer(data=self.request.data)
+        if serializer.is_valid():
+            day_of_week = serializer.validated_data.get("day_of_week")
+            course_name = serializer.validated_data.get("course_name")
+            collection = get_object_or_404(Collection, user=request.user)
+            course = Course.objects.create(name=course_name, collection=collection)
+            Schedule.objects.create(course=course, day_of_week=day_of_week)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.errors, status=status.HTTP_200_OK)
+
+
+class ScheduleSelector(generics.CreateAPIView):
+    permissions = [permissions.IsAuthenticated]
+    serializer_class = ScheduleSerializer
+
+    def perform_create(self, serializer):
+        day = serializer.validated_data.get("day_of_week")
+        schedules = Schedule.objects.filter(
+            day_of_week=day, course__collection__user=self.request.user
+        )
+        today = datetime.date.today()
+        for schedule in schedules:
+            Session.objects.create(course=schedule.course, date=today, status="present")
 
 
 class DateQuery(APIView):

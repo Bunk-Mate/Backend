@@ -39,6 +39,14 @@ class ScheduleSerializer(serializers.ModelSerializer):
         fields = ["day_of_week", "order"]
 
 
+class ScheduleCreateSerializer(serializers.ModelSerializer):
+    course_name = serializers.CharField()
+
+    class Meta:
+        model = Schedule
+        fields = ["day_of_week", "course_name"]
+
+
 class CourseSerializer(serializers.ModelSerializer):
     schedules = ScheduleSerializer(many=True)
 
