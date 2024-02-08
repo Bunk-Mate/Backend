@@ -12,16 +12,12 @@ userpatterns = [
 
 modelpatterns = [
     path("collection", views.CollectionView.as_view()),
+    path("schedules", views.ScheduleListView.as_view(), name="schedule-list"),
+    path("schedule/<int:pk>", views.ScheduleView.as_view(), name="schedule-detail"),
     path(
         "schedule_create/<int:course_id>",
         views.ScheduleCreateView.as_view(),
         name="schedule-create",
-    ),
-    path("schedules", views.ScheduleListView.as_view(), name="schedule-list"),
-    path(
-        "schedule_destroy/<int:pk>",
-        views.ScheduleDestroyView.as_view(),
-        name="schedule-destroy",
     ),
     path("session/<int:pk>", views.SessionView.as_view(), name="session-detail"),
     path("schedule_selector", views.ScheduleSelector.as_view()),

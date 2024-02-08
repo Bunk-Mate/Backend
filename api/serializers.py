@@ -44,10 +44,11 @@ class ScheduleSerializer(serializers.ModelSerializer):
     day_of_week_str = serializers.CharField(
         source="get_day_of_week_display", read_only=True
     )
+    course_name = serializers.CharField(source="course.name")
 
     class Meta:
         model = Schedule
-        fields = ["day_of_week", "order", "day_of_week_str"]
+        fields = ["day_of_week", "order", "day_of_week_str", "course_name"]
 
 
 class CourseSerializer(serializers.ModelSerializer):

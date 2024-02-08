@@ -4,7 +4,7 @@ from collections import defaultdict
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from django.db import IntegrityError
-from django.db.models import F
+from django.db.models import F, Max
 from django.shortcuts import get_object_or_404
 from rest_framework import generics, permissions, status
 from rest_framework.authtoken.models import Token
@@ -16,6 +16,7 @@ from api.models import Collection, Course, Schedule, Session
 from api.serializers import (
     CollectionSerializer,
     CourseListSerializer,
+    CourseSerializer,
     DateQuerySerializer,
     ScheduleSerializer,
     SessionSerializer,
@@ -89,12 +90,22 @@ class CollectionView(generics.RetrieveUpdateDestroyAPIView, generics.CreateAPIVi
     def perform_update(self, serializer):
         serializer.save()
 
-    # Disallow partial updates, see comment in serializers@76
-    def patch(self, request, *args, **kwargs):
-        return Response(
-            {"detail": 'Method "PATCH" not allowed'},
-            status=status.HTTP_405_METHOD_NOT_ALLOWED,
-        )
+    def get(self, request):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+
+        schedules = Schedule.objects.filter(course__collection__user=request.user)
+        max_order = schedules.aggregate(Max("order", default=1))["order__max"]
+        courses = []
+        for order in range(1, max_order + 1):
+            schedules_order = schedules.filter(order=order).values_list(
+                "course__name", flat=True
+            )
+            courses.append(list(schedules_order))
+        result = dict(serializer.data)
+        result["courses"] = courses
+
+        return Response(result, status=status.HTTP_200_OK)
 
 
 class CourseListView(generics.CreateAPIView):
@@ -109,7 +120,7 @@ class CourseListView(generics.CreateAPIView):
                 {
                     "name": course.name,
                     "schedules_url": reverse(
-                        "schedule-create",
+                        "course_schedules-list",
                         kwargs={"course_id": course.id},
                         request=request,
                     ),
@@ -122,7 +133,7 @@ class CourseListView(generics.CreateAPIView):
         serializer.save(collection=collection)
 
 
-class ScheduleCreateView(generics.CreateAPIView):
+class ScheduleCreateView(generics.ListCreateAPIView):
     permissions = [permissions.IsAuthenticated]
     serializer_class = ScheduleSerializer
     lookup_field = "course_id"
@@ -141,9 +152,24 @@ class ScheduleCreateView(generics.CreateAPIView):
         )
 
 
-class ScheduleListView(APIView):
+class SessionView(generics.RetrieveDestroyAPIView):
+    permissions = [permissions.IsAuthenticated]
+    serializer_class = SessionSerializer
+
+    def get_queryset(self):
+        return Session.objects.filter(course__collection__user=self.request.user)
+
+
+class ScheduleView(generics.RetrieveDestroyAPIView):
     permissions = [permissions.IsAuthenticated]
     serializer_class = ScheduleSerializer
+
+    def get_queryset(self):
+        return Schedule.objects.filter(course__collection__user=self.request.user.id)
+
+
+class ScheduleListView(APIView):
+    permissions = [permissions.IsAuthenticated]
 
     def get(self, request):
         schedules = Schedule.objects.filter(
@@ -154,7 +180,7 @@ class ScheduleListView(APIView):
             result[schedule.get_day_of_week_display()].append(
                 {
                     "url": reverse(
-                        "schedule-destroy",
+                        "schedule-detail",
                         kwargs={"pk": schedule.id},
                         request=request,
                     ),
@@ -162,22 +188,6 @@ class ScheduleListView(APIView):
                 }
             )
         return Response(result, status=status.HTTP_200_OK)
-
-
-class ScheduleDestroyView(generics.DestroyAPIView):
-    permissions = [permissions.IsAuthenticated]
-    serializer_class = ScheduleSerializer
-
-    def get_queryset(self):
-        return Schedule.objects.filter(course__collection__user=self.request.user.id)
-
-
-class SessionView(generics.RetrieveUpdateAPIView):
-    permissions = [permissions.IsAuthenticated]
-    serializer_class = SessionSerializer
-
-    def get_queryset(self):
-        return Session.objects.filter(course__collection__user=self.request.user)
 
 
 class ScheduleSelector(generics.CreateAPIView):
