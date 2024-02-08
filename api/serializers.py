@@ -82,15 +82,17 @@ class CollectionSerializer(serializers.ModelSerializer):
         collection = Collection.objects.create(**validated_data)
 
         course_list = defaultdict(list)
-        for periods in table_data:
+        for order, periods in enumerate(table_data, 1):
             for day, period in enumerate(periods, 1):
                 if period != "":
-                    course_list[period].append(day)
+                    course_list[period].append((day, order))
 
         for course in course_list:
             created_course = collection.courses.create(name=course)
-            for day in course_list[course]:
-                created_course.schedules.create(day_of_week=day)
+            for schedule in course_list[course]:
+                created_course.schedules.create(
+                    day_of_week=schedule[0], order=schedule[1]
+                )
 
         create_sessions.delay(collection.start_date, collection.end_date)
         return collection
@@ -109,14 +111,17 @@ class CollectionSerializer(serializers.ModelSerializer):
         # Hence we delete all existing courses and rebuild them
         instance.courses.all().delete()
         course_list = defaultdict(list)
-        for periods in table_data:
+        for order, periods in enumerate(table_data, 1):
             for day, period in enumerate(periods, 1):
-                course_list[period].append(day)
+                if period != "":
+                    course_list[period].append((day, order))
 
         for course in course_list:
             created_course = instance.courses.create(name=course)
-            for day in course_list[course]:
-                created_course.schedules.create(day_of_week=day)
+            for schedule in course_list[course]:
+                created_course.schedules.create(
+                    day_of_week=schedule[0], order=schedule[1]
+                )
 
         create_sessions.delay(instance.start_date, instance.end_date)
         return instance

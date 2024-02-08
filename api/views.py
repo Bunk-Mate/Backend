@@ -4,7 +4,7 @@ from collections import defaultdict
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from django.db import IntegrityError
-from django.db.models import F
+from django.db.models import F, Max
 from django.shortcuts import get_object_or_404
 from rest_framework import generics, permissions, status
 from rest_framework.authtoken.models import Token
@@ -89,6 +89,23 @@ class CollectionView(generics.RetrieveUpdateDestroyAPIView, generics.CreateAPIVi
 
     def perform_update(self, serializer):
         serializer.save()
+
+    def get(self, request):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+
+        schedules = Schedule.objects.filter(course__collection__user=request.user)
+        max_order = schedules.aggregate(Max("order", default=1))["order__max"]
+        courses = []
+        for order in range(1, max_order + 1):
+            schedules_order = schedules.filter(order=order).values_list(
+                "course__name", flat=True
+            )
+            courses.append(list(schedules_order))
+        result = dict(serializer.data)
+        result["courses"] = courses
+
+        return Response(result, status=status.HTTP_200_OK)
 
 
 class CourseListView(generics.CreateAPIView):
