@@ -152,14 +152,6 @@ class ScheduleCreateView(generics.ListCreateAPIView):
         )
 
 
-class SessionView(generics.RetrieveDestroyAPIView):
-    permissions = [permissions.IsAuthenticated]
-    serializer_class = SessionSerializer
-
-    def get_queryset(self):
-        return Session.objects.filter(course__collection__user=self.request.user)
-
-
 class ScheduleView(generics.RetrieveDestroyAPIView):
     permissions = [permissions.IsAuthenticated]
     serializer_class = ScheduleSerializer
@@ -202,6 +194,14 @@ class ScheduleSelector(generics.CreateAPIView):
         today = datetime.date.today()
         for schedule in schedules:
             Session.objects.create(course=schedule.course, date=today, status="present")
+
+
+class SessionView(generics.RetrieveUpdateDestroyAPIView):
+    permissions = [permissions.IsAuthenticated]
+    serializer_class = SessionSerializer
+
+    def get_queryset(self):
+        return Session.objects.filter(course__collection__user=self.request.user)
 
 
 class DateQuery(APIView):
