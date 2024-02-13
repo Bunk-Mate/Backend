@@ -5,8 +5,6 @@ from celery import Celery
 from celery.schedules import crontab
 from dotenv import load_dotenv
 
-app = Celery("attendence_tracker")
-app.conf.timezone = "Asia/Kolkata"
 if "WEBSITE_HOSTNAME" in os.environ:
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "attendence_tracker.production")
     broker_url = os.getenv("AZURE_REDIS_BROKER_CONNECTIONSTRING")
@@ -14,8 +12,15 @@ else:
     load_dotenv("./.creds")
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "attendence_tracker.settings")
     broker_url = os.getenv("BROKERLOCATION")
+
+import django
+
+django.setup()
+
+app = Celery("attendence_tracker")
+app.conf.timezone = "Asia/Kolkata"
 app.conf.broker_url = broker_url
-# app.conf.result_backend = "django-db"
+app.conf.result_backend = "django-db"
 
 
 @app.task
@@ -68,11 +73,3 @@ def create_sessions_schedule(schedule_id, start_date, end_date):
 def debug():
     logging.log("log recieved")
     print("recieved debug")
-
-
-app.conf.beat_schedule = {
-    "create_sessions_daily": {
-        "task": "attendence_tracker.celery.debug",
-        "schedule": crontab(hour=0, minute=0),
-    }
-}
