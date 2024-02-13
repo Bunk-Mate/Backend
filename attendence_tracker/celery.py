@@ -2,7 +2,7 @@ import logging
 import os
 
 from celery import Celery
-from celery.schedules import crontab
+import django
 from dotenv import load_dotenv
 
 if "WEBSITE_HOSTNAME" in os.environ:
@@ -13,7 +13,6 @@ else:
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "attendence_tracker.settings")
     broker_url = os.getenv("BROKERLOCATION")
 
-import django
 
 django.setup()
 
@@ -71,5 +70,5 @@ def create_sessions_schedule(schedule_id, start_date, end_date):
 
 @app.task
 def debug():
-    logging.log("log recieved")
+    logging.debug("log recieved")
     print("recieved debug")
