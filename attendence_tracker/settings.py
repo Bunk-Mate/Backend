@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -20,7 +21,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-ys)is-uls_$yaa(f%iyy^^7pe4a@ql)3thr9loszz#!8l4m4fk"
+SECRET_KEY = os.getenv("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -86,15 +87,24 @@ WSGI_APPLICATION = "attendence_tracker.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "testing",
-        "USER": "hridesh",
-        "PASSWORD": "system",
-        "HOST": "localhost",
-        "PORT": "5432",
+        "NAME": os.environ.get("DBNAME"),
+        "HOST": os.environ.get("DBHOST"),
+        "USER": os.environ.get("DBUSER"),
+        "PASSWORD": os.environ.get("DBPASS"),
     }
 }
 
 
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": os.environ.get("CACHELOCATION"),
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        },
+    }
+}
+SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
 

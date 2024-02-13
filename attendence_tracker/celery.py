@@ -3,13 +3,19 @@ import os
 
 from celery import Celery
 from celery.schedules import crontab
-
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "attendence_tracker.settings")
+from dotenv import load_dotenv
 
 app = Celery("attendence_tracker")
 app.conf.timezone = "Asia/Kolkata"
-app.conf.broker_url = "redis://localhost:6379/0"
-app.conf.result_backend = "django-db"
+if "WEBSITE_HOSTNAME" in os.environ:
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "attendence_tracker.production")
+    broker_url = os.getenv("AZURE_REDIS_BROKER_CONNECTIONSTRING")
+else:
+    load_dotenv("./.creds")
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "attendence_tracker.settings")
+    broker_url = os.getenv("BROKERLOCATION")
+app.conf.broker_url = "redis://localhost:6379/1"
+# app.conf.result_backend = "django-db"
 
 
 @app.task
