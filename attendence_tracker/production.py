@@ -14,8 +14,6 @@ CSRF_TRUSTED_ORIGINS = (
 )
 DEBUG = False
 
-SESSION_ENGINE = "django.contrib.sessions.backends.cache"
-
 # Configure Postgres database based on connection string of the libpq Keyword/Value form
 # https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-CONNSTRING
 conn_str = os.environ["AZURE_POSTGRESQL_CONNECTIONSTRING"]
