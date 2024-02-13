@@ -14,7 +14,7 @@ else:
     load_dotenv("./.creds")
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "attendence_tracker.settings")
     broker_url = os.getenv("BROKERLOCATION")
-app.conf.broker_url = "redis://localhost:6379/1"
+app.conf.broker_url = broker_url
 # app.conf.result_backend = "django-db"
 
 
