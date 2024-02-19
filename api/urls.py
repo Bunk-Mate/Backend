@@ -19,14 +19,9 @@ modelpatterns = [
     ),
     path("schedules", views.ScheduleListView.as_view(), name="schedule-list"),
     path("schedule/<int:pk>", views.ScheduleView.as_view(), name="schedule-detail"),
-    path(
-        "schedule_create/<int:course_id>",
-        views.ScheduleCreateView.as_view(),
-        name="schedule-create",
-    ),
     path("session/<int:pk>", views.SessionView.as_view(), name="session-detail"),
     path("schedule_selector", views.ScheduleSelector.as_view()),
-    path("courses", views.CourseListView.as_view(), name="course-list"),
+    path("courses", views.CourseView.as_view(), name="course-list"),
 ]
 
 querypatterns = [

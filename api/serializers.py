@@ -7,7 +7,7 @@ from rest_framework.reverse import reverse
 from rest_framework.serializers import ValidationError
 
 from api.models import Collection, Course, Schedule, Session
-from attendence_tracker.celery import create_sessions
+from attendence_tracker.celery import create_sessions, create_sessions_schedule
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -29,12 +29,6 @@ class UserSerializer(serializers.ModelSerializer):
         return User.objects.create_user(**validated_data)
 
 
-class CourseListSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Course
-        fields = ["name"]
-
-
 class SessionSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Session
@@ -54,11 +48,23 @@ class ScheduleSerializer(serializers.ModelSerializer):
 
 
 class CourseSerializer(serializers.ModelSerializer):
-    schedules = ScheduleSerializer(many=True)
+    schedules = ScheduleSerializer(write_only=True)
 
     class Meta:
         model = Course
         fields = ["name", "schedules"]
+
+    def create(self, validated_data):
+        schedule = validated_data.pop("schedules")
+        collection = validated_data.get("collection")
+
+        course = Course.objects.create(**validated_data)
+        schedule = course.schedules.create(**schedule)
+
+        create_sessions_schedule.delay(
+            schedule.id, collection.start_date, collection.end_date
+        )
+        return course
 
 
 class CollectionSerializer(serializers.ModelSerializer):

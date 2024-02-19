@@ -15,7 +15,6 @@ from rest_framework.views import APIView
 from api.models import Collection, Course, Schedule, Session
 from api.serializers import (
     CollectionSerializer,
-    CourseListSerializer,
     CourseSerializer,
     DateQuerySerializer,
     ScheduleSerializer,
@@ -108,9 +107,9 @@ class CollectionView(generics.RetrieveUpdateDestroyAPIView, generics.CreateAPIVi
         return Response(result, status=status.HTTP_200_OK)
 
 
-class CourseListView(generics.CreateAPIView):
+class CourseView(generics.CreateAPIView):
     permissions = [permissions.IsAuthenticated]
-    serializer_class = CourseListSerializer
+    serializer_class = CourseSerializer
 
     def get(self, request):
         result = []
@@ -128,9 +127,16 @@ class CourseListView(generics.CreateAPIView):
             )
         return Response(result, status=status.HTTP_200_OK)
 
-    def perform_create(self, serializer):
+    def create(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
         collection = get_object_or_404(Collection, user=self.request.user)
-        serializer.save(collection=collection)
+        course = serializer.save(collection=collection)
+        result = dict(serializer.data)
+        result["schedules_url"] = reverse(
+            "course_schedules-list", kwargs={"course_id": course.id}, request=request
+        )
+        return Response(result, status=status.HTTP_201_CREATED)
 
 
 class ScheduleCreateView(generics.ListCreateAPIView):
