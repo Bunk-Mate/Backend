@@ -113,7 +113,9 @@ class CourseView(generics.CreateAPIView):
 
     def get(self, request):
         result = []
-        courses = Course.objects.filter(collection__user=self.request.user)
+
+        collection = get_object_or_404(Collection, user=self.request.user)
+        courses = Course.objects.filter(collection=collection)
         for course in courses:
             result.append(
                 {
@@ -146,7 +148,8 @@ class ScheduleCreateView(generics.ListCreateAPIView):
 
     def get_queryset(self):
         id = self.kwargs.get("course_id")
-        course = get_object_or_404(Course, id=id, collection__user=self.request.user)
+        collection = get_object_or_404(Collection, user=self.request.user)
+        course = get_object_or_404(Course, id=id, collection=collection)
         return Schedule.objects.filter(course=course)
 
     def perform_create(self, serializer):
@@ -163,16 +166,18 @@ class ScheduleView(generics.RetrieveDestroyAPIView):
     serializer_class = ScheduleSerializer
 
     def get_queryset(self):
-        return Schedule.objects.filter(course__collection__user=self.request.user.id)
+        collection = get_object_or_404(Collection, user=self.request.user)
+        return Schedule.objects.filter(course__collection=collection)
 
 
 class ScheduleListView(APIView):
     permissions = [permissions.IsAuthenticated]
 
     def get(self, request):
-        schedules = Schedule.objects.filter(
-            course__collection__user=request.user
-        ).order_by(F("day_of_week"))
+        collection = get_object_or_404(Collection, user=self.request.user)
+        schedules = Schedule.objects.filter(course__collection=collection).order_by(
+            F("day_of_week")
+        )
         result = defaultdict(list)
         for schedule in schedules:
             result[schedule.get_day_of_week_display()].append(
@@ -194,8 +199,9 @@ class ScheduleSelector(generics.CreateAPIView):
 
     def perform_create(self, serializer):
         day = serializer.validated_data.get("day_of_week")
+        collection = get_object_or_404(Collection, user=self.request.user)
         schedules = Schedule.objects.filter(
-            day_of_week=day, course__collection__user=self.request.user
+            day_of_week=day, course__collection=collection
         )
         today = datetime.date.today()
         for schedule in schedules:
@@ -207,7 +213,8 @@ class SessionView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = SessionSerializer
 
     def get_queryset(self):
-        return Session.objects.filter(course__collection__user=self.request.user)
+        collection = get_object_or_404(Collection, user=self.request.user)
+        return Session.objects.filter(course__collection=collection)
 
 
 class DateQuery(APIView):
@@ -216,10 +223,9 @@ class DateQuery(APIView):
     def get(self, request):
         date_str = request.GET.get("date")
         date = datetime.date.fromisoformat(date_str)
+        collection = get_object_or_404(Collection, user=self.request.user)
 
-        courses = Course.objects.filter(
-            sessions__date=date, collection__user=self.request.user
-        )
+        courses = Course.objects.filter(sessions__date=date, collection=collection)
         # Add session status to each course
         courses = courses.annotate(status=F("sessions__status"))
         # Add session id to each course, used for building url
@@ -236,4 +242,5 @@ class StatQuery(generics.ListAPIView):
     serializer_class = StatQuerySerializer
 
     def get_queryset(self):
-        return Course.objects.filter(collection__user=self.request.user)
+        collection = get_object_or_404(Collection, user=self.request.user)
+        return Course.objects.filter(collection=collection)
