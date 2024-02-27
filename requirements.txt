@@ -8,11 +8,13 @@ click-plugins==1.1.1
 click-repl==0.3.0
 Django==5.0.1
 django-celery-results==2.5.1
+django-cors-headers==4.3.1
 django-redis==5.4.0
 djangorestframework==3.14.0
 kombu==5.3.5
 prompt-toolkit==3.0.43
 psycopg==3.1.17
+psycopg2-binary==2.9.9
 pyngrok==7.1.0
 python-dateutil==2.8.2
 python-dotenv==1.0.1
