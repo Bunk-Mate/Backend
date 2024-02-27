@@ -15,6 +15,7 @@ from rest_framework.views import APIView
 from api.models import Collection, Course, Schedule, Session
 from api.serializers import (
     CollectionSerializer,
+    CollectionViewSerializer,
     CourseSerializer,
     DateQuerySerializer,
     ScheduleSerializer,
@@ -22,7 +23,7 @@ from api.serializers import (
     StatQuerySerializer,
     UserSerializer,
 )
-from attendence_tracker.celery import create_sessions_schedule
+from attendence_tracker.celery import create_sessions, create_sessions_schedule
 
 
 class UserList(generics.ListAPIView):
@@ -244,3 +245,34 @@ class StatQuery(generics.ListAPIView):
     def get_queryset(self):
         collection = get_object_or_404(Collection, user=self.request.user)
         return Course.objects.filter(collection=collection)
+
+
+class CollectionList(generics.ListAPIView):
+    permissions = [permissions.IsAuthenticated]
+    serializer_class = CollectionViewSerializer
+
+    def get_queryset(self):
+        return Collection.objects.filter(shared=True)
+
+
+class CollectionSelector(generics.CreateAPIView):
+    permissions = [permissions.IsAuthenticated]
+    serializer_class = CollectionViewSerializer
+
+    def perform_create(self, serializer):
+        copy_id = serializer.validated_data.pop("copy_id")
+        collection = get_object_or_404(Collection, id=copy_id)
+
+        # If User has a collection, delete it
+        my_collection = Collection.objects.filter(user=self.request.user)
+        if my_collection:
+            my_collection.delete()
+
+        cloned_collection = collection.make_clone(
+            attrs={"shared": False, "user": self.request.user}
+        )
+        create_sessions.delay(
+            cloned_collection.id,
+            cloned_collection.start_date,
+            cloned_collection.end_date,
+        )

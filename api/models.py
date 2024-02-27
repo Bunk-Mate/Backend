@@ -3,13 +3,14 @@ import math
 
 from django.contrib.auth.models import User
 from django.db import models
+from model_clone.models import CloneModel
 
 
 class Marketplace(models.Model):
     id = models.AutoField(primary_key=True)
 
 
-class Collection(models.Model):
+class Collection(CloneModel):
     user = models.OneToOneField(
         User, related_name="collection", on_delete=models.CASCADE
     )
@@ -18,13 +19,16 @@ class Collection(models.Model):
     threshold = models.IntegerField(default=75)
     start_date = models.DateField()
     end_date = models.DateField()
+    _clone_fields = ["name", "threshold", "start_date", "end_date"]
+    _clone_m2o_or_o2m_fields = ["courses"]
 
 
-class Course(models.Model):
+class Course(CloneModel):
     name = models.CharField(max_length=120)
     collection = models.ForeignKey(
         Collection, related_name="courses", on_delete=models.CASCADE
     )
+    _clone_m2o_or_o2m_fields = ["schedules"]
 
     def percentage(self):
         present_count = self.sessions.filter(
