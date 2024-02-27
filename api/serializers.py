@@ -101,7 +101,7 @@ class CollectionSerializer(serializers.ModelSerializer):
                     day_of_week=schedule[0], order=schedule[1]
                 )
 
-        create_sessions.delay(collection.start_date, collection.end_date)
+        create_sessions.delay(collection.id, collection.start_date, collection.end_date)
         return collection
 
     def update(self, instance, validated_data):
@@ -130,8 +130,17 @@ class CollectionSerializer(serializers.ModelSerializer):
                     day_of_week=schedule[0], order=schedule[1]
                 )
 
-        create_sessions.delay(instance.start_date, instance.end_date)
+        create_sessions.delay(instance.id, instance.start_date, instance.end_date)
         return instance
+
+
+class CollectionViewSerializer(serializers.ModelSerializer):
+    copy_id = serializers.IntegerField(write_only=True)
+    name = serializers.CharField(read_only=True)
+
+    class Meta:
+        model = Collection
+        fields = ["name", "id", "copy_id"]
 
 
 class DateQuerySerializer(serializers.ModelSerializer):
