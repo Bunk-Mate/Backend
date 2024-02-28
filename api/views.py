@@ -80,18 +80,19 @@ class CollectionView(generics.RetrieveUpdateDestroyAPIView, generics.CreateAPIVi
     serializer_class = CollectionSerializer
     queryset = Collection.objects.all()
 
-    def get_object(self):
-        obj = get_object_or_404(Collection, user=self.request.user)
-        return obj
-
     def perform_create(self, serializer):
+        # If User has a collection, delete it
+        my_collection = Collection.objects.filter(user=self.request.user)
+        if my_collection:
+            my_collection.delete()
+
         serializer.save(user=self.request.user)
 
     def perform_update(self, serializer):
         serializer.save()
 
     def get(self, request):
-        instance = self.get_object()
+        instance = get_object_or_404(Collection, user=self.request.user)
         serializer = self.get_serializer(instance)
 
         schedules = Schedule.objects.filter(course__collection__user=request.user)
