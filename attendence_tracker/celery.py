@@ -1,8 +1,8 @@
 import logging
 import os
 
-from celery import Celery
 import django
+from celery import Celery
 from dotenv import load_dotenv
 
 if "WEBSITE_HOSTNAME" in os.environ:
@@ -23,12 +23,12 @@ app.conf.result_backend = "django-db"
 
 
 @app.task
-def create_sessions(start_date, end_date):
+def create_sessions(collection_id, start_date, end_date):
     """Create sessions for all schedules"""
     from api.dateutils import working_days
     from api.models import Schedule, Session
 
-    schedules = Schedule.objects.all()
+    schedules = Schedule.objects.filter(course__collection__id=collection_id)
     session_objs = []
     for day in working_days(start_date, end_date):
         for schedule in schedules:
