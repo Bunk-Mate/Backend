@@ -211,13 +211,13 @@ class ScheduleSelector(generics.CreateAPIView):
 
     def perform_create(self, serializer):
         day = serializer.validated_data.get("day_of_week")
+        date = serializer.validated_data.get("date")
         collection = get_object_or_404(Collection, user=self.request.user)
         schedules = Schedule.objects.filter(
             day_of_week=day, course__collection=collection
         )
-        today = datetime.date.today()
         for schedule in schedules:
-            Session.objects.create(course=schedule.course, date=today, status="present")
+            Session.objects.create(course=schedule.course, date=date, status="present")
 
 
 class SessionView(generics.RetrieveUpdateDestroyAPIView):
