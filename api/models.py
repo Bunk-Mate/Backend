@@ -31,9 +31,7 @@ class Course(CloneModel):
     _clone_m2o_or_o2m_fields = ["schedules"]
 
     def percentage(self):
-        present_count = self.sessions.filter(
-            status="present", date__lte=datetime.date.today()
-        ).count()
+        present_count = self.sessions.filter(status="present").count()
         bunked_count = self.sessions.filter(status="bunked").count()
         if present_count == 0:
             return 0
