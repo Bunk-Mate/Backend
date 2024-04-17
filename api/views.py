@@ -107,15 +107,17 @@ class CollectionView(generics.RetrieveUpdateDestroyAPIView, generics.CreateAPIVi
 
         schedules = Schedule.objects.filter(course__collection__user=request.user)
         max_order = schedules.aggregate(Max("order", default=1))["order__max"]
-        courses = []
-        for order in range(1, max_order + 1):
-            schedules_order = schedules.filter(order=order).values_list(
-                "course__name", flat=True
-            )
-            courses.append(list(schedules_order))
-        result = dict(serializer.data)
-        result["courses"] = courses
+        template = [[None] * max_order for i in range(5)]
 
+        for day in range(0, 5):
+            schedules_on_day = schedules.filter(day_of_week=day + 1).order_by("order")
+            for schedule in schedules_on_day:
+                template[schedule.order - 1][
+                    schedule.day_of_week - 1
+                ] = schedule.course.name
+
+        result = dict(serializer.data)
+        result["courses_data"] = template
         return Response(result, status=status.HTTP_200_OK)
 
 

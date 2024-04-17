@@ -70,7 +70,6 @@ class CourseSerializer(serializers.ModelSerializer):
 
 class CollectionSerializer(serializers.ModelSerializer):
     shared = serializers.BooleanField(required=False)
-    courses = CourseSerializer(many=True, read_only=True)
     courses_data = serializers.ListField(write_only=True)
 
     class Meta:
@@ -81,7 +80,6 @@ class CollectionSerializer(serializers.ModelSerializer):
             "start_date",
             "end_date",
             "threshold",
-            "courses",
             "courses_data",
         ]
 
