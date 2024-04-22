@@ -23,6 +23,6 @@ jobs:
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         script: |
           cd src/Backend
-          git fetch origin homeserver
-          git reset --hard origin/homeserver
+          git fetch origin 
+          git reset --hard origin/main
           sudo systemctl restart webserver.service
