@@ -4,10 +4,10 @@ name: Deploy the backend to the homeserver
 on:
   push:
     branches: 
-      - homeserver
+      - main
   pull_request:
     branches: 
-     - homeserver
+     - main
 
 jobs:
   deploy:
@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Execute SSH commmands on remote server
+    - name: Update homserver and restart it
       uses: appleboy/ssh-action@v1.0.3
       with:
         host: ${{ secrets.SSH_HOST }}
