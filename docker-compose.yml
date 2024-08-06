@@ -1,0 +1,50 @@
+# This is an Extension: https://github.com/compose-spec/compose-spec/blob/main/spec.md#extension
+x-environment: &env
+  environment:
+    DBNAME: development
+    DBUSER: development
+    DBPASS: development
+    DBHOST: postgres
+    CACHELOCATION: redis://redis:6379/0
+    BROKERLOCATION: redis://redis:6379/1
+    SECRET_KEY: django-insecure-ys)is-uls_$yaa(f%iyy^^7pe4a@ql)3thr9loszz#!8l4m4fk
+
+services:
+  django:
+    build:
+      context: .
+      dockerfile: ./docker/web/Dockerfile
+    entrypoint: ./docker/web/docker-entrypoint.sh
+    volumes:
+      - ./:/app # Mount the current directory to /app within the container
+    ports:
+      - "8000:8000"
+    depends_on:
+      - redis
+      - postgres
+    <<: *env # This is a YAML merge
+
+  celery:
+    build:
+      context: .
+      dockerfile: ./docker/celery/Dockerfile
+    volumes:
+      - ./:/app
+    depends_on:
+      - django # Migrations need to be run before celery can start because of django-celery-results
+    <<: *env
+
+  redis:
+    image: redis:alpine
+
+  postgres:
+    image: postgres:alpine
+    volumes:
+      - db-vol:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=development
+      - POSTGRES_USER=development
+      - POSTGRES_DB=development
+
+volumes:
+  db-vol:

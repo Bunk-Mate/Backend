@@ -3,8 +3,6 @@
 import os
 import sys
 
-from dotenv import load_dotenv
-
 
 def main():
     """Run administrative tasks."""
@@ -14,7 +12,6 @@ def main():
         os.environ.setdefault("DJANGO_SETTINGS_MODULE", "attendence_tracker.production")
     else:
         print("Loading environment variables for .env file")
-        load_dotenv("./.creds")
         os.environ.setdefault("DJANGO_SETTINGS_MODULE", "attendence_tracker.settings")
 
     try:

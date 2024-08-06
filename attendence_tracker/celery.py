@@ -3,13 +3,11 @@ import os
 
 import django
 from celery import Celery
-from dotenv import load_dotenv
 
 if "WEBSITE_HOSTNAME" in os.environ:
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "attendence_tracker.production")
     broker_url = os.getenv("REDIS_BROKER_CONNECTIONSTRING")
 else:
-    load_dotenv("./.creds")
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "attendence_tracker.settings")
     broker_url = os.getenv("BROKERLOCATION")
 
