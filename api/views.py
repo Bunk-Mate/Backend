@@ -134,6 +134,7 @@ class CourseView(generics.CreateAPIView):
         for course in courses:
             result.append(
                 {
+                    "id": course.id,
                     "name": course.name,
                     "schedules_url": reverse(
                         "course_schedules-list",
@@ -223,13 +224,17 @@ class ScheduleSelector(generics.CreateAPIView):
             Session.objects.create(course=schedule.course, date=date, status="present")
 
 
-class SessionView(generics.RetrieveUpdateDestroyAPIView):
+class SessionView(generics.RetrieveUpdateDestroyAPIView, generics.CreateAPIView):
     permissions = [permissions.IsAuthenticated]
     serializer_class = SessionSerializer
 
     def get_queryset(self):
         collection = get_object_or_404(Collection, user=self.request.user)
         return Session.objects.filter(course__collection=collection)
+
+    def perform_create(self, serializer):
+        status = serializer.validated_data.get("status", "present")
+        serializer.save(status=status)
 
 
 class DateQuery(APIView):
