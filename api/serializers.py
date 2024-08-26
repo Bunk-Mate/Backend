@@ -87,6 +87,7 @@ class CollectionSerializer(serializers.ModelSerializer):
         table_data = validated_data.pop("courses_data")
         collection = Collection.objects.create(**validated_data)
 
+        # First nested list will have first period of each day
         course_list = defaultdict(list)
         for order, periods in enumerate(table_data, 1):
             for day, period in enumerate(periods, 1):
