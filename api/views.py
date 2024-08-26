@@ -107,7 +107,8 @@ class CollectionView(generics.RetrieveUpdateDestroyAPIView, generics.CreateAPIVi
 
         schedules = Schedule.objects.filter(course__collection__user=request.user)
         max_order = schedules.aggregate(Max("order", default=1))["order__max"]
-        template = [[None] * max_order for i in range(5)]
+        # First nested list is the first period of each day, second nested list is second period of each day
+        template = [[""] * 5 for i in range(max_order)]
 
         for day in range(0, 5):
             schedules_on_day = schedules.filter(day_of_week=day + 1).order_by("order")
