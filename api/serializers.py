@@ -29,12 +29,6 @@ class UserSerializer(serializers.ModelSerializer):
         return User.objects.create_user(**validated_data)
 
 
-class SessionSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = Session
-        fields = ["url", "date", "status"]
-
-
 class ScheduleSerializer(serializers.ModelSerializer):
     day_of_week = serializers.IntegerField(write_only=True)
     day_of_week_str = serializers.CharField(
@@ -65,6 +59,25 @@ class CourseSerializer(serializers.ModelSerializer):
         create_sessions_schedule.delay(
             schedule.id, collection.start_date, collection.end_date
         )
+        return course
+
+
+class SessionSerializer(serializers.HyperlinkedModelSerializer):
+    status = serializers.ChoiceField(choices=Session.status_choices, required=False)
+    course = serializers.PrimaryKeyRelatedField(
+        queryset=Course.objects.all(), write_only=True
+    )
+
+    class Meta:
+        model = Session
+        fields = ["url", "date", "status", "course"]
+
+    def validate_course(self, course):
+        request = self.context.get("request")
+        if request and course.collection.user != request.user:
+            raise serializers.ValidationError(
+                "You can only add sessions to your own courses"
+            )
         return course
 
 
