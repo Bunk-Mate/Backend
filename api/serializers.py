@@ -2,6 +2,7 @@ from collections import defaultdict
 
 from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
+from django.db.models import Max
 from rest_framework import serializers
 from rest_framework.reverse import reverse
 from rest_framework.serializers import ValidationError
@@ -52,9 +53,12 @@ class CourseSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         schedule = validated_data.pop("schedules")
         collection = validated_data.get("collection")
+        max_order = Schedule.objects.filter(
+            course__collection=collection, day_of_week=schedule.get("day_of_week")
+        ).aggregate(Max("order"))["order__max"]
 
         course = Course.objects.create(**validated_data)
-        schedule = course.schedules.create(**schedule)
+        schedule = course.schedules.create(**schedule, order=max_order + 1)
 
         create_sessions_schedule.delay(
             schedule.id, collection.start_date, collection.end_date
