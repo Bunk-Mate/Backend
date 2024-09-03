@@ -1,17 +1,13 @@
-name: Deploy the backend to the homeserver
+name: Deploy the backend
 
-
+# Only deploy when version tags (eg: v1.0.0) are pushed
 on:
   push:
-    branches: 
-      - main
-  pull_request:
-    branches: 
-     - main
+    tags:
+     - "v*.*.*"
 
 jobs:
   deploy:
-
     runs-on: ubuntu-latest
 
     steps:
@@ -24,5 +20,6 @@ jobs:
         script: |
           cd src/Backend
           git fetch origin 
-          git reset --hard origin/main
+          git reset --hard ${{  github.ref_name }}
+          python manage.py migrate
           sudo systemctl restart webserver.service
