@@ -14,7 +14,7 @@ services:
     build:
       context: .
       dockerfile: ./docker/web/Dockerfile
-    entrypoint: ./docker/web/docker-entrypoint.sh
+    entrypoint: ./docker/web/start_server.sh
     volumes:
       - ./:/app # Mount the current directory to /app within the container
     ports:
