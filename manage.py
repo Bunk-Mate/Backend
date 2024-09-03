@@ -9,6 +9,7 @@ def main():
 
     # If Website is hosted, use the production settings
     if os.environ.get("WEBSITE_HOSTNAME"):
+        print("Production settings loaded")
         os.environ.setdefault("DJANGO_SETTINGS_MODULE", "attendence_tracker.production")
     else:
         print("Loading environment variables for .env file")

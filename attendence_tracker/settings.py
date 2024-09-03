@@ -90,11 +90,12 @@ WSGI_APPLICATION = "attendence_tracker.wsgi.application"
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.postgresql",
+        "ENGINE": os.environ.get("DBENGINE"),
         "NAME": os.environ.get("DBNAME"),
         "HOST": os.environ.get("DBHOST"),
         "USER": os.environ.get("DBUSER"),
         "PASSWORD": os.environ.get("DBPASS"),
+        "PORT": os.environ.get("DBPORT"),
     }
 }
 

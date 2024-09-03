@@ -21,5 +21,4 @@ jobs:
           cd src/Backend
           git fetch origin 
           git reset --hard ${{  github.ref_name }}
-          python manage.py migrate
           sudo systemctl restart webserver.service

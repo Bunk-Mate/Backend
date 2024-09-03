@@ -23,7 +23,7 @@ conn_str_params = {
 }
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.postgresql",
+        "ENGINE": os.environ.get("DBENGINE"),
         "NAME": conn_str_params["dbname"],
         "HOST": conn_str_params["host"],
         "USER": conn_str_params["user"],
