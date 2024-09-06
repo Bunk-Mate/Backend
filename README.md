@@ -53,6 +53,14 @@ To get started with the Bunk Mate backend, follow these steps:
 
 The backend server will be up and running at `http://localhost:8000/`.
 
+## Roadmap
+- [ ] Implement better authentication
+- [ ] Set up sentry
+- [ ] Refactor codebase
+- [ ] Set up logging and remove print statements
+- [ ] Implement **ranked bunking**
+- [ ] Test out timetable autodetection from images
+
 ## License
 
 This project is licensed under the [MIT License](https://opensource.org/license/mit).
