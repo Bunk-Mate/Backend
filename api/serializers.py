@@ -58,7 +58,9 @@ class CourseSerializer(serializers.ModelSerializer):
         ).aggregate(Max("order"))["order__max"]
 
         course = Course.objects.create(**validated_data)
-        schedule = course.schedules.create(**schedule, order=max_order + 1)
+        schedule = course.schedules.create(
+            **schedule, order=(max_order + 1) if max_order else 1
+        )
 
         create_sessions_schedule.delay(
             schedule.id, collection.start_date, collection.end_date
