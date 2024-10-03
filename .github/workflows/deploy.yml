@@ -1,10 +1,7 @@
 name: Deploy the backend
 
-# Only deploy when version tags (eg: v1.0.0) are pushed
 on:
   push:
-    tags:
-     - "v*.*.*"
 
 jobs:
   deploy:
@@ -20,5 +17,5 @@ jobs:
         script: |
           cd src/Backend
           git fetch origin 
-          git reset --hard ${{  github.ref_name }}
+          git reset --hard origin/main
           sudo systemctl restart webserver.service
