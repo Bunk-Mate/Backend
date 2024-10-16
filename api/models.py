@@ -39,7 +39,7 @@ class Course(CloneModel):
             return round(present_count / (present_count + bunked_count) * 100)
 
     def bunks_available(self):
-        total_sessions = self.sessions.count()
+        total_sessions = self.sessions.exclude(status="cancelled").count()
         must_attend = math.ceil((total_sessions * self.collection.threshold) / 100)
         total_bunks_available = total_sessions - must_attend
         bunked_sessions = self.sessions.filter(status="bunked").count()
