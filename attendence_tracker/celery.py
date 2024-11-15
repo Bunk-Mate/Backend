@@ -4,9 +4,9 @@ import os
 import django
 from celery import Celery
 
-if "WEBSITE_HOSTNAME" in os.environ:
+if os.environ.get("PRODUCTION") == "true":
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "attendence_tracker.production")
-    broker_url = os.getenv("REDIS_BROKER_CONNECTIONSTRING")
+    broker_url = os.getenv("BROKERLOCATION")
 else:
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "attendence_tracker.settings")
     broker_url = os.getenv("BROKERLOCATION")

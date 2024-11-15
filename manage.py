@@ -8,7 +8,7 @@ def main():
     """Run administrative tasks."""
 
     # If Website is hosted, use the production settings
-    if os.environ.get("WEBSITE_HOSTNAME"):
+    if os.environ.get("PRODUCTION") == "true":
         print("Production settings loaded")
         os.environ.setdefault("DJANGO_SETTINGS_MODULE", "attendence_tracker.production")
     else:
