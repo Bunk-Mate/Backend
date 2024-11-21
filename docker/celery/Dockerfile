@@ -8,4 +8,4 @@ RUN \
 	python3 -m pip install -r requirements.txt --no-cache-dir && \
 	apk --purge del .build-deps
 COPY . .
-CMD celery -A attendence_tracker worker -l info
+CMD celery -A tasks worker -l info

@@ -8,7 +8,7 @@ from rest_framework.reverse import reverse
 from rest_framework.serializers import ValidationError
 
 from api.models import Collection, Course, Schedule, Session
-from attendence_tracker.celery import create_sessions, create_sessions_schedule
+from tasks.celery import create_sessions, create_sessions_schedule
 
 
 class UserSerializer(serializers.ModelSerializer):

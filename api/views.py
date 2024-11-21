@@ -23,7 +23,7 @@ from api.serializers import (
     StatQuerySerializer,
     UserSerializer,
 )
-from attendence_tracker.celery import create_sessions, create_sessions_schedule
+from tasks.celery import create_sessions, create_sessions_schedule
 
 
 class UserList(generics.ListAPIView):
