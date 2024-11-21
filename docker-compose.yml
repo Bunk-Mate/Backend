@@ -14,6 +14,12 @@ services:
       - ./:/app # Mount the current directory to /app within the container
     ports:
       - "8000:8000"
+    healthcheck:
+      test: [ "CMD", "python3", "manage.py", "migrate", "--check" ]
+      interval: 2s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
     depends_on:
       redis:
         condition: service_started
@@ -29,7 +35,9 @@ services:
     volumes:
       - ./:/app
     depends_on:
-      - django # Migrations need to be run before celery can start because of django-celery-results
+      django:
+        # Migrations need to be run before celery can start because of django-celery-results
+        condition: service_healthy
     <<: *env
 
   redis:
