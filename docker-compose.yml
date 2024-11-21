@@ -5,6 +5,7 @@ x-environment: &env
 
 services:
   django:
+    container_name: django
     build:
       context: .
       dockerfile: ./docker/web/Dockerfile
@@ -14,11 +15,14 @@ services:
     ports:
       - "8000:8000"
     depends_on:
-      - redis
-      - postgres
+      redis:
+        condition: service_started
+      postgres:
+        condition: service_healthy
     <<: *env # This is a YAML merge
 
   celery:
+    container_name: celery
     build:
       context: .
       dockerfile: ./docker/celery/Dockerfile
@@ -29,12 +33,20 @@ services:
     <<: *env
 
   redis:
+    container_name: redis
     image: redis:alpine
 
   postgres:
+    container_name: postgres
     image: postgres:alpine
     volumes:
       - db-vol:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-U", "$POSTGRES_USER" ]
+      interval: 2s
+      timeout: 30s
+      retries: 5
+      start_period: 30s
     <<: *env
 
 volumes:
