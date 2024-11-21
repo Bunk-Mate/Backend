@@ -10,10 +10,10 @@ def main():
     # If Website is hosted, use the production settings
     if os.environ.get("PRODUCTION") == "true":
         print("Production settings loaded")
-        os.environ.setdefault("DJANGO_SETTINGS_MODULE", "attendence_tracker.production")
+        os.environ.setdefault("DJANGO_SETTINGS_MODULE", "core.production")
     else:
-        print("Loading environment variables for .env file")
-        os.environ.setdefault("DJANGO_SETTINGS_MODULE", "attendence_tracker.settings")
+        print("Development settings loaded")
+        os.environ.setdefault("DJANGO_SETTINGS_MODULE", "core.settings")
 
     try:
         from django.core.management import execute_from_command_line
