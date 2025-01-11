@@ -1,15 +1,15 @@
 # Bunk Mate - (Backend)
 
-This repository contains the source code and documentation for the attendence tracker backend
+This repository contains the source code and documentation for the bunkmate backend.
 
 ## Tech Stack
 
-- **Django Rest Framework:** For the building the main API.
+- **Django Rest Framework:** For serving the main API.
 - **Celery:** Celery is used for distributed task processing, here it is used for the resource intensive process of creating hundreds of sessions for a certain timetable.
 - **Redis:** For message brokering between djano and celery.
 - **PostgreSQL:** Database to store user data.
 
-## Getting Started
+## Getting Started **(OUT OF DATE SINCE DOCKERISATION, please refer to .env.sample until this readme gets updated)**
 
 To get started with the Bunk Mate backend, follow these steps:
 
