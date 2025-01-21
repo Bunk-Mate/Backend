@@ -35,8 +35,8 @@ INSTALLED_APPS = [
     "api",
     "corsheaders",
     "django_celery_results",
-    "rest_framework.authtoken",
     "rest_framework",
+    "knox",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -47,8 +47,12 @@ INSTALLED_APPS = [
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
-        "rest_framework.authentication.TokenAuthentication",
+        "knox.auth.TokenAuthentication",
     ]
+}
+
+REST_KNOX = {
+    "TOKEN_TTL": None,
 }
 
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
