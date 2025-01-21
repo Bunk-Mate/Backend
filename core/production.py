@@ -44,7 +44,7 @@ LOGGING = {
     "handlers": {
         "file": {
             "class": "logging.FileHandler",
-            "filename": "/var/log/django.log",
+            "filename": "/var/log/bunkmate_backend.log",
             "formatter": "app",
         },
     },

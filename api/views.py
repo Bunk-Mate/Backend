@@ -48,6 +48,10 @@ class UserRegister(generics.CreateAPIView):
 class UserLogin(LoginView):
     permission_classes = [permissions.AllowAny]
 
+    def get_post_response(self, request, token, instance):
+        data = self.get_post_response_data(request, token, instance)
+        return Response(data, status=202)
+
     def post(self, request, format=None):
         serializer = AuthTokenSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
