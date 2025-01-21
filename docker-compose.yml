@@ -10,6 +10,7 @@ services:
       context: .
       dockerfile: ./docker/web/Dockerfile
     entrypoint: ./docker/web/start_server.sh
+    restart: always
     volumes:
       - ./:/app # Mount the current directory to /app within the container
     ports:
@@ -32,6 +33,7 @@ services:
     build:
       context: .
       dockerfile: ./docker/celery/Dockerfile
+    restart: always
     volumes:
       - ./:/app
     depends_on:
@@ -43,10 +45,12 @@ services:
   redis:
     container_name: redis
     image: redis:alpine
+    restart: always
 
   postgres:
     container_name: postgres
     image: postgres:alpine
+    restart: always
     volumes:
       - db-vol:/var/lib/postgresql/data
     healthcheck:
