@@ -42,15 +42,11 @@ LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
     "handlers": {
-        "file": {
-            "class": "logging.FileHandler",
-            "filename": "/var/log/bunkmate_backend.log",
-            "formatter": "app",
-        },
+        "console": {"class": "logging.StreamHandler", "formatter": "app"},
     },
     "root": {
-        "handlers": ["file"],
-        "level": "WARNING",
+        "handlers": ["console"],
+        "level": "INFO",
     },
     "formatters": {
         "app": {

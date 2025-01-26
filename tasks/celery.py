@@ -68,5 +68,4 @@ def create_sessions_schedule(schedule_id, start_date, end_date):
 
 @app.task
 def debug():
-    logging.debug("log recieved")
-    print("recieved debug")
+    logging.debug("log received")

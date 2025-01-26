@@ -57,7 +57,7 @@ The backend server will be up and running at `http://localhost:8000/`.
 - [ ] Implement better authentication
 - [ ] Set up sentry
 - [ ] Refactor codebase
-- [ ] Set up logging and remove print statements
+- [x] Set up logging and remove print statements
 - [ ] Implement **ranked bunking**
 - [ ] Test out timetable autodetection from images
 

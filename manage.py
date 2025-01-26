@@ -2,6 +2,7 @@
 """Django's command-line utility for administrative tasks."""
 import os
 import sys
+import logging
 
 
 def main():
@@ -9,10 +10,10 @@ def main():
 
     # If Website is hosted, use the production settings
     if os.environ.get("PRODUCTION") == "true":
-        print("Production settings loaded")
+        logging.info("Production settings loaded")
         os.environ.setdefault("DJANGO_SETTINGS_MODULE", "core.production")
     else:
-        print("Development settings loaded")
+        logging.info("Development settings loaded")
         os.environ.setdefault("DJANGO_SETTINGS_MODULE", "core.settings")
 
     try:
