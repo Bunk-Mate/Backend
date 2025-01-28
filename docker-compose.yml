@@ -16,10 +16,10 @@ services:
     ports:
       - "8000:8000"
     healthcheck:
-      test: [ "CMD", "python3", "manage.py", "migrate", "--check" ]
-      interval: 2s
+      test: [ "CMD", "curl", "--silent", "--fail", "http://127.0.0.1:8000/healthcheck/" ]
+      interval: 30s
       timeout: 10s
-      retries: 5
+      retries: 3
       start_period: 30s
     depends_on:
       redis:
@@ -54,10 +54,10 @@ services:
     volumes:
       - db-vol:/var/lib/postgresql/data
     healthcheck:
-      test: [ "CMD", "pg_isready", "-d", "${POSTGRES_DB}", "-U", "${POSTGRES_USER}"]
-      interval: 2s
-      timeout: 30s
-      retries: 5
+      test: [ "CMD", "pg_isready", "-d", "${POSTGRES_DB}", "-U", "${POSTGRES_USER}" ]
+      interval: 30s
+      timeout: 15s
+      retries: 3
       start_period: 30s
     <<: *env
 
