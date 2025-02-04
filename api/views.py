@@ -34,9 +34,12 @@ class UserList(generics.ListAPIView):
 
 
 class UserDetail(generics.RetrieveAPIView):
-    queryset = User.objects.all()
+    permission_classes = [permissions.AllowAny]
     serializer_class = UserSerializer
-    lookup_field = "username"
+    queryset = User.objects.all()
+
+    def get_object(self):
+        return self.request.user
 
 
 class UserRegister(generics.CreateAPIView):
