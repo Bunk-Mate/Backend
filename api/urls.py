@@ -23,6 +23,7 @@ modelpatterns = [
     path("session/<int:pk>", views.SessionView.as_view(), name="session-detail"),
     path("schedule_selector", views.ScheduleSelector.as_view()),
     path("courses", views.CourseView.as_view(), name="course-list"),
+    path("user/<str:username>", views.UserDetail.as_view(), name="user-detail"),
 ]
 
 querypatterns = [

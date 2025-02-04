@@ -12,7 +12,7 @@ services:
     entrypoint: ./docker/web/start_server.sh
     restart: always
     volumes:
-      - ./:/app # Mount the current directory to /app within the container
+      - ./:/app # Mount the current directory to /app within the container (for dev)
     ports:
       - "8000:8000"
     healthcheck:
