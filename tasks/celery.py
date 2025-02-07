@@ -17,7 +17,6 @@ django.setup()
 app = Celery("tasks")
 app.conf.timezone = "Asia/Kolkata"
 app.conf.broker_url = broker_url
-app.conf.result_backend = "django-db"
 
 
 @app.task

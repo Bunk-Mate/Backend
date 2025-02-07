@@ -34,7 +34,6 @@ ALLOWED_HOSTS = ["*"]
 INSTALLED_APPS = [
     "api",
     "corsheaders",
-    "django_celery_results",
     "rest_framework",
     "knox",
     "django.contrib.admin",
