@@ -11,10 +11,10 @@ def main():
     # If Website is hosted, use the production settings
     if os.environ.get("PRODUCTION") == "true":
         logging.info("Production settings loaded")
-        os.environ.setdefault("DJANGO_SETTINGS_MODULE", "core.production")
+        os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.django.production")
     else:
         logging.info("Development settings loaded")
-        os.environ.setdefault("DJANGO_SETTINGS_MODULE", "core.settings")
+        os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.django.base")
 
     try:
         from django.core.management import execute_from_command_line
