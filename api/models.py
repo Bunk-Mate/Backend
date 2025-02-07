@@ -1,4 +1,3 @@
-import datetime
 import math
 
 from django.contrib.auth.models import User
