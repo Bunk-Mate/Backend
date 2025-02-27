@@ -178,6 +178,15 @@ class ScheduleView(generics.RetrieveDestroyAPIView):
         collection = get_object_or_404(Collection, user=self.request.user)
         return Schedule.objects.filter(course__collection=collection)
 
+    def perform_destroy(self, instance):
+        day = instance.day_of_week
+        course = instance.course
+        Session.objects.filter(date__week_day=day + 1, course=course).delete()
+        if course.schedules.count() == 1:
+            course.delete()
+            return
+        instance.delete()
+
 
 class ScheduleListView(APIView):
     permissions = [permissions.IsAuthenticated]
