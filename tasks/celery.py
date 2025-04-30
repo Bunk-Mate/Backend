@@ -5,10 +5,10 @@ import django
 from celery import Celery
 
 if os.environ.get("PRODUCTION") == "true":
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "core.production")
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.django.production")
     broker_url = os.getenv("BROKERLOCATION")
 else:
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "core.settings")
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.django.base")
     broker_url = os.getenv("BROKERLOCATION")
 
 
@@ -17,7 +17,6 @@ django.setup()
 app = Celery("tasks")
 app.conf.timezone = "Asia/Kolkata"
 app.conf.broker_url = broker_url
-app.conf.result_backend = "django-db"
 
 
 @app.task
