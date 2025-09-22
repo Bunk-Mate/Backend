@@ -4,13 +4,13 @@ from .settings import *
 
 # Configure the domain name using the environment variable
 ALLOWED_HOSTS = (
-    [os.environ["WEBSITE_HOSTNAME"], "127.0.0.1"]
-    if "WEBSITE_HOSTNAME" in os.environ
+    os.environ["WEBSITE_HOSTNAMES"].split(",") + ["127.0.0.1"]
+    if "WEBSITE_HOSTNAMES" in os.environ
     else ["127.0.0.1"]
 )
 CSRF_TRUSTED_ORIGINS = (
-    ["https://" + os.environ["WEBSITE_HOSTNAME"]]
-    if "WEBSITE_HOSTNAME" in os.environ
+    [f"https://{domain}" for domain in os.environ["WEBSITE_HOSTNAMES"].split(",")]
+    if "WEBSITE_HOSTNAMES" in os.environ
     else []
 )
 DEBUG = False
