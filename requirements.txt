@@ -99,3 +99,4 @@ vine==5.1.0
 wcwidth==0.2.13
 django-rest-knox==5.0.2
 django-health-check==3.18.3
+sentry-sdk[django]
