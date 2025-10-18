@@ -1,0 +1,29 @@
+meta {
+  name: Create Extra Session
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{domain_name}}/sessions
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+  User-Agent: insomnia/9.2.0
+}
+
+body:json {
+  {
+    "date": "2024-02-07",
+    "course": 36,
+    "status":"bunked"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

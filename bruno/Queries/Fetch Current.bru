@@ -1,0 +1,21 @@
+meta {
+  name: Fetch Current
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{domain_name}}/current
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+  User-Agent: insomnia/9.2.0
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

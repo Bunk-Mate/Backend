@@ -1,0 +1,32 @@
+meta {
+  name: Login
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{domain_name}}/login
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  User-Agent: insomnia/9.2.0
+}
+
+body:json {
+  {
+    "username": "account123",
+    "password": "password123@"
+  }
+}
+
+script:post-response {
+  bru.setVar('auth-token', res.body.token);
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

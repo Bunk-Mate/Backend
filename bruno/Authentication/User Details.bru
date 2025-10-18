@@ -1,0 +1,21 @@
+meta {
+  name: User Details
+  type: http
+  seq: 8
+}
+
+get {
+  url: {{domain_name}}/user_details
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+  User-Agent: insomnia/9.2.0
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

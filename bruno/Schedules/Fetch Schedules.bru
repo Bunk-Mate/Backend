@@ -1,0 +1,20 @@
+meta {
+  name: Fetch Schedules
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{domain_name}}/schedules
+  body: none
+  auth: inherit
+}
+
+headers {
+  User-Agent: insomnia/9.2.0
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

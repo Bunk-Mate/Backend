@@ -1,0 +1,27 @@
+meta {
+  name: Collection Selector
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{domain_name}}/collection_selector
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+  User-Agent: insomnia/9.2.0
+}
+
+body:json {
+  {
+    "copy_id":595
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

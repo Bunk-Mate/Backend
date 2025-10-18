@@ -1,0 +1,25 @@
+meta {
+  name: Fetch Sessions
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{domain_name}}/datequery?date=2024-09-24
+  body: json
+  auth: inherit
+}
+
+params:query {
+  date: 2024-09-24
+}
+
+headers {
+  Content-Type: application/json
+  User-Agent: insomnia/9.2.0
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

@@ -1,0 +1,82 @@
+meta {
+  name: Create Collection
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{domain_name}}/collection
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+  User-Agent: insomnia/9.2.0
+}
+
+body:json {
+  {
+    "name": "S3 CSE-D",
+    "shared": true,
+    "start_date": "2024-09-23",
+    "end_date": "2025-01-03",
+    "threshold": 75,
+    "courses_data": [
+      [
+        "CIR",
+        "CIR",
+        "Maths",
+        "ECE",
+        "DSA"
+      ],
+      [
+        "C",
+        "CIR",
+        "DBMS",
+        "Maths",
+        "Maths"
+      ],
+      [
+        "ECE",
+        "C",
+        "DBMS",
+        "DBMS",
+        "DSA"
+      ],
+      [
+        "DBMS",
+        "DSA",
+        "DSA",
+        "DSA",
+        "IAM"
+      ],
+      [
+        "Maths",
+        "C",
+        "C",
+        "",
+        ""
+      ],
+      [
+        "",
+        "ECE",
+        "ECE",
+        "",
+        ""
+      ],
+      [
+        "",
+        "ADM",
+        "",
+        "",
+        ""
+      ]
+    ]
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

@@ -1,0 +1,27 @@
+meta {
+  name: Update Session
+  type: http
+  seq: 6
+}
+
+patch {
+  url: {{domain_name}}session/6
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+  User-Agent: insomnia/9.2.0
+}
+
+body:json {
+  {
+    "status":"bunked"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
