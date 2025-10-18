@@ -9,9 +9,9 @@ This repository contains the source code and documentation for the bunkmate back
 - **Redis:** For message brokering between djano and celery.
 - **PostgreSQL:** Database to store user data.
 
-## Getting Started **(OUT OF DATE SINCE DOCKERISATION, please refer to .env.sample until this readme gets updated)**
+## Getting Started
 
-To get started with the Bunk Mate backend, follow these steps:
+The recommended way to setup the bunkmate backend is to use the docker compose file, follow these steps:
 
 1. Clone the repository:
 
@@ -19,43 +19,27 @@ To get started with the Bunk Mate backend, follow these steps:
    git clone https://github.com/Bunk-Mate/backend
    ```
 
-2. Install dependencies:
+2. Set up env:
 
    ```bash
-   pip install -r requirements.txt
+   cp .env.sample .env
    ```
 
-3. Create a `.creds` file following this template:
-   ```bash
-   DBNAME=
-   DBHOST=
-   DBUSER=
-   DBPASS=
-   CACHELOCATION=
-   BROKERLOCATION=
-   SECRET_KEY=
-   ```
-   * `CACHELOCATION` and `BROKERLOCATION` correspond to the urls of the redis databases.
-   * This env file is used for a local development environment, for production - 
-       - Set the environment variable `WEBSITE_HOSTNAME` to the domain of the website.
-       - Load the above listed variables into the environment using platform specific methods.
-3. Set up the database:
+3. Run the docker compose file (this will setup everything for you, including celery, postgres and redis):
 
-   ```bash
-   python manage.py migrate
-   ```
-
-4. Run the development server:
-
-   ```bash
-   python manage.py runserver
+   ```python
+   docker compose up
    ```
 
 The backend server will be up and running at `http://localhost:8000/`.
 
+### Using Bruno Collections
+
+This repository has a [bruno](https://www.usebruno.com/) collection checked in under `/bruno` which you can open using the app for testing out the different API endpoints. Start from the register/login requests to populate the `auth-token` variable which is required for the other requests.
+
 ## Roadmap
-- [ ] Implement better authentication
-- [ ] Set up sentry
+- [x] Implement better authentication
+- [x] Set up sentry
 - [ ] Refactor codebase
 - [x] Set up logging and remove print statements
 - [ ] Implement **ranked bunking**
