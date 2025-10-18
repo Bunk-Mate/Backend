@@ -46,6 +46,31 @@ class Course(CloneModel):
 
         return total_bunks_available - bunked_sessions
 
+    def current_percentage(self):
+        present_count = self.sessions.filter(
+            status="present", date__lte=datetime.date.today()
+        ).count()
+        bunked_count = self.sessions.filter(
+            status="bunked", date__lte=datetime.date.today()
+        ).count()
+        if present_count == 0:
+            return 0
+        else:
+            return round(present_count / (present_count + bunked_count) * 100)
+
+    def bunks_taken(self):
+        return self.sessions.filter(
+            status="bunked", date__lte=datetime.date.today()
+        ).count()
+
+    def classes_present(self):
+        return self.sessions.filter(
+            status="present", date__lte=datetime.date.today()
+        ).count()
+
+    def total_classes(self):
+        return self.sessions.filter(date__lte=datetime.date.today()).count()
+
 
 class Session(models.Model):
     status_choices = models.TextChoices("StatusChoices", "present bunked cancelled")

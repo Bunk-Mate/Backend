@@ -23,6 +23,7 @@ from api.serializers import (
     ScheduleSerializer,
     SessionSerializer,
     StatQuerySerializer,
+    CurrentStatSerializer,
     UserSerializer,
 )
 from tasks.celery import create_sessions, create_sessions_schedule
@@ -262,6 +263,15 @@ class DateQuery(APIView):
 class StatQuery(generics.ListAPIView):
     permissions = [permissions.IsAuthenticated]
     serializer_class = StatQuerySerializer
+
+    def get_queryset(self):
+        collection = get_object_or_404(Collection, user=self.request.user)
+        return Course.objects.filter(collection=collection)
+
+
+class CurrentStatQuery(generics.ListAPIView):
+    permissions = [permissions.IsAuthenticated]
+    serializer_class = CurrentStatSerializer
 
     def get_queryset(self):
         collection = get_object_or_404(Collection, user=self.request.user)

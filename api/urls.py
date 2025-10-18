@@ -32,6 +32,7 @@ querypatterns = [
         views.DateQuery.as_view(),
     ),
     path("statquery", views.StatQuery.as_view()),
+    path("current", views.CurrentStatQuery.as_view()),
 ]
 
 urlpatterns = list(userpatterns + modelpatterns + querypatterns)

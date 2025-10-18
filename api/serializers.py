@@ -182,3 +182,15 @@ class StatQuerySerializer(serializers.ModelSerializer):
     class Meta:
         model = Course
         fields = ["name", "percentage", "bunks_available"]
+
+
+class CurrentStatSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Course
+        fields = [
+            "name",
+            "current_percentage",
+            "bunks_taken",
+            "classes_present",
+            "total_classes",
+        ]
