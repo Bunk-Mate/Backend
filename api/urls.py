@@ -33,6 +33,7 @@ querypatterns = [
     ),
     path("statquery", views.StatQuery.as_view()),
     path("current", views.CurrentStatQuery.as_view()),
+    path("bulk_cancel", views.BulkCancelSessions.as_view()),
 ]
 
 urlpatterns = list(userpatterns + modelpatterns + querypatterns)
