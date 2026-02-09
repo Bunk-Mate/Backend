@@ -24,6 +24,7 @@ modelpatterns = [
     path("schedule_selector", views.ScheduleSelector.as_view()),
     path("courses", views.CourseView.as_view(), name="course-list"),
     path("user_details", views.UserDetail.as_view(), name="user-detail"),
+    path("bulk_cancel", views.BulkCancelSessions.as_view()),
 ]
 
 querypatterns = [

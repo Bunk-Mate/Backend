@@ -307,3 +307,48 @@ class CollectionSelector(generics.CreateAPIView):
             cloned_collection.start_date,
             cloned_collection.end_date,
         )
+
+
+
+class BulkCancelSessions(APIView):
+    permissions = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        start_date_str = request.data.get("start_date")
+        end_date_str = request.data.get("end_date")
+
+        if not start_date_str or not end_date_str:
+            return Response(
+                {"error": "Both start_date and end_date are required."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        try:
+            start_date = datetime.date.fromisoformat(start_date_str)
+            end_date = datetime.date.fromisoformat(end_date_str)
+        except ValueError:
+            return Response(
+                {"error": "Invalid date format. Use YYYY-MM-DD."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if start_date > end_date:
+            return Response(
+                {"error": "start_date must be before or equal to end_date."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        collection = get_object_or_404(Collection, user=request.user)
+
+        # Update all sessions in the date range to cancelled
+        updated_count = Session.objects.filter(
+            course__collection=collection,
+            date__gte=start_date,
+            date__lte=end_date,
+        ).update(status="cancelled")
+
+        return Response(
+            {"updated_count": updated_count, "message": f"Cancelled {updated_count} sessions."},
+            status=status.HTTP_200_OK,
+        )
+
