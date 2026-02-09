@@ -1,0 +1,28 @@
+meta {
+  name: Bulk Cancel Sessions
+  type: http
+  seq: 7
+}
+
+post {
+  url: {{domain_name}}/bulk_cancel
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+  User-Agent: insomnia/9.2.0
+}
+
+body:json {
+  {
+    "start_date": "2026-02-10",
+    "end_date": "2026-02-14"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
